@@ -1,5 +1,7 @@
-@import-normalize; /* bring in normalize.css styles */
+import { injectGlobal } from '@emotion/css';
+import 'modern-normalize';
 
+injectGlobal`
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -13,3 +15,7 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+`;
+
+export default injectGlobal;

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { nanoid } from 'nanoid';
+import GlobalStyle from '../GlobalStyle';
 import PhonebookSection from '../PhonebookSection';
 import { Wrapper } from './App.styled';
 
@@ -8,7 +9,7 @@ class App extends Component {
     contacts: [],
     filter: '',
   };
-  
+
   componentDidMount() {
     const contacts = localStorage.getItem('contacts');
     const parsedContacts = JSON.parse(contacts);
@@ -66,7 +67,6 @@ class App extends Component {
 
   render() {
     const { contacts, filter } = this.state;
-    // localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
     return (
       <Wrapper>
         <PhonebookSection
@@ -78,6 +78,7 @@ class App extends Component {
           filter={filter}
           onDeleteContact={this.deleteContact}
         />
+        <GlobalStyle />
       </Wrapper>
     );
   }
