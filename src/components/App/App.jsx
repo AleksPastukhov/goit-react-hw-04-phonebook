@@ -1,87 +1,73 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import GlobalStyle from '../GlobalStyle';
 import PhonebookSection from '../PhonebookSection';
 import { Wrapper } from './App.styled';
 
-class App extends Component {
-  state = {
-    contacts: [],
-    filter: '',
+export default function App() {
+  const [contacts, setContacts] = useState(() => {
+    return JSON.parse(window.localStorage.getItem('contacts')) ?? [];
+  });
+  const [filter, setFilter] = useState('');
+
+  useEffect(() => {
+    window.localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
+
+  const deleteContact = contactId => {
+    setContacts(prevState =>
+      prevState.filter(contact => contact.id !== contactId)
+    );
   };
 
-  componentDidMount() {
-    const contacts = localStorage.getItem('contacts');
-    const parsedContacts = JSON.parse(contacts);
-    if (parsedContacts) {
-      this.setState({
-        contacts: parsedContacts,
-      });
-    }
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.contacts !== prevState.contacts) {
-      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-    }
-  }
-
-  deleteContact = contactId => {
-    this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== contactId),
-    }));
-  };
-
-  handleChange = request => {
-    this.setState({
-      filter: request,
-    });
-  };
-
-  createContact = (name, number) => {
+  const createContact = (newName, newNumber) => {
     return {
       id: nanoid(4),
-      name,
-      number,
+      name: newName,
+      number: newNumber,
     };
   };
 
-  formSubmitHendler = ({ name, number }) => {
-    for (let contact of this.state.contacts) {
-      if (
-        contact.name.toLowerCase() === name.toLowerCase() &&
-        contact.number === number
-      ) {
-        alert(`${name} is already in contacts`);
-        return;
-      }
-      if (contact.number === number) {
-        alert(`${number} is already in contacts`);
+  const formSubmitHendler = (newName, newNumber) => {
+    for (let contact of contacts) {
+      if (contact.number === newNumber) {
+        toast.error(
+          `
+Oops!!! this phone number ${newNumber} is already saved in your contact list under the name "${contact.name}".`
+        );
         return;
       }
     }
-    this.setState(({ contacts }) => ({
-      contacts: [...contacts, this.createContact(name, number)],
-    }));
+    setContacts(prevState => [...prevState, createContact(newName, newNumber)]);
   };
 
-  render() {
-    const { contacts, filter } = this.state;
-    return (
-      <Wrapper>
-        <PhonebookSection
-          mainTitle="Phonebook"
-          title="Contacts"
-          contactsSet={contacts}
-          onSubmit={this.formSubmitHendler}
-          onChange={this.handleChange}
-          filter={filter}
-          onDeleteContact={this.deleteContact}
-        />
-        <GlobalStyle />
-      </Wrapper>
-    );
-  }
+  return (
+    <Wrapper>
+      <ToastContainer
+        position="top-right"
+        autoClose={2500}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      <PhonebookSection
+        mainTitle="Phonebook"
+        title="Contacts"
+        contactsSet={contacts}
+        onSubmit={formSubmitHendler}
+        onChange={setFilter}
+        filter={filter}
+        onDeleteContact={deleteContact}
+      />
+      <GlobalStyle />
+    </Wrapper>
+  );
 }
-
-export default App;
