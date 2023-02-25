@@ -20,7 +20,6 @@ const userSchema = object({
 
 export default function ContactForm({ onSubmit }) {
   const handleSubmit = (e, { resetForm }) => {
-    console.log(e);
     onSubmit(e.name, e.number);
     resetForm();
   };
