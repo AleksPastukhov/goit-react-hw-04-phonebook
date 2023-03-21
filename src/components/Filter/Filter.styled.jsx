@@ -20,6 +20,7 @@ export const Input = styled.input`
   border: transparent;
   padding: 5px;
   font-weight: 700;
+      width: 100%;
   &:active,
   &:focus {
     outline: transparent;
